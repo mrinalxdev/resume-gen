@@ -93,21 +93,21 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
           <input
             type="text"
             name="name"
-            placeholder="Full Name"
+            placeholder="Full Name *"
             required
             className="input-field"
           />
           <input
             type="text"
             name="title"
-            placeholder="Professional Title"
+            placeholder="Professional Title *"
             required
             className="input-field"
           />
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Email *"
             required
             className="input-field"
           />
@@ -182,7 +182,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
                     type="text"
                     value={exp.title}
                     onChange={(e) => updateExperience(index, 'title', e.target.value)}
-                    placeholder="Job Title"
+                    placeholder="Job Title *"
                     required
                     className="input-field"
                   />
@@ -190,7 +190,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
                     type="text"
                     value={exp.company}
                     onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                    placeholder="Company"
+                    placeholder="Company *"
                     required
                     className="input-field"
                   />
@@ -198,7 +198,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
                     type="text"
                     value={exp.location}
                     onChange={(e) => updateExperience(index, 'location', e.target.value)}
-                    placeholder="Location"
+                    placeholder="Location *"
                     required
                     className="input-field"
                   />
@@ -207,7 +207,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
                       type="text"
                       value={exp.startDate}
                       onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
-                      placeholder="Start Date"
+                      placeholder="Start Date *"
                       required
                       className="input-field"
                     />
@@ -215,7 +215,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
                       type="text"
                       value={exp.endDate}
                       onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
-                      placeholder="End Date"
+                      placeholder="End Date *"
                       required
                       className="input-field"
                     />
@@ -264,7 +264,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
         <h2 className="text-xl font-semibold text-gray-900">Education</h2>
         <textarea
           name="education"
-          placeholder="Enter each education item on a new line&#10;Example:&#10;MS in Computer Science, Stanford University (2018-2020)&#10;BS in Software Engineering, MIT (2014-2018)"
+          placeholder="* Enter each education item on a new line&#10;Example:&#10;MS in Computer Science, Stanford University (2018-2020)&#10;BS in Software Engineering, MIT (2014-2018)"
           rows={4}
           required
           className="input-field"
@@ -276,7 +276,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
         <input
           type="text"
           name="skills"
-          placeholder="Enter skills separated by commas (e.g., JavaScript, React, Node.js)"
+          placeholder="Enter skills separated by commas (e.g., JavaScript, React, Node.js) *"
           required
           className="input-field"
         />
