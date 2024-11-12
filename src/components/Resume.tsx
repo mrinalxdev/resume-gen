@@ -68,7 +68,7 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
         {/* GitHub Section */}
         {data.githubData && (
           <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-gray-900">Featured Projects</h2>
+            <h2 className="text-2xl font-semibold text-gray-900">Projects</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.githubData.repos.map((repo) => (
                 <div key={repo.name} className="border rounded-lg p-4 space-y-2">

@@ -1,12 +1,29 @@
-import React, { useState } from 'react';
-import { Github, Mail, Phone, MapPin, ExternalLink, Loader2, Share2 } from 'lucide-react';
-import ResumeForm from './components/ResumeForm';
-import Resume from './components/Resume';
-import ProjectSelector from './components/ProjectSelector';
-import { ResumeData } from './types';
+import React, { useState } from "react";
+import {
+  Github,
+  Mail,
+  Phone,
+  MapPin,
+  ExternalLink,
+  Loader2,
+  Share2,
+} from "lucide-react";
+import ResumeForm from "./components/ResumeForm";
+import Resume from "./components/Resume";
+import ProjectSelector from "./components/ProjectSelector";
+import { ResumeData } from "./types";
+import ShareButton from "./components/ShareButton";
+import { saveToCache, getFromCache } from "./utils/cache";
+import { generateShareableLink, getDataFromShare } from "./utils/share";
 
 function App() {
-  const [resumeData, setResumeData] = useState<ResumeData | null>(null);
+  const [resumeData, setResumeData] = useState<ResumeData | null>(() => {
+    // Checking for the shared data in the cache nor it would create a conflict between the previous one and the current one
+    const sharedData = getDataFromShare();
+    if (sharedData) return sharedData;
+    return getFromCache();
+  });
+  const [shareableUrl, setShareableUrl] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [allProjects, setAllProjects] = useState<any[]>([]);
@@ -17,12 +34,14 @@ function App() {
       if (data.githubUsername) {
         const [userRes, reposRes] = await Promise.all([
           fetch(`https://api.github.com/users/${data.githubUsername}`),
-          fetch(`https://api.github.com/users/${data.githubUsername}/repos?sort=stars&per_page=100`)
+          fetch(
+            `https://api.github.com/users/${data.githubUsername}/repos?sort=stars&per_page=100`
+          ),
         ]);
-        
+
         const userData = await userRes.json();
         const reposData = await reposRes.json();
-        
+
         const filteredRepos = reposData
           .filter((repo: any) => !repo.fork)
           .sort((a: any, b: any) => b.stargazers_count - a.stargazers_count)
@@ -31,23 +50,29 @@ function App() {
             description: repo.description,
             stars: repo.stargazers_count,
             url: repo.html_url,
-            language: repo.language
+            language: repo.language,
           }));
 
         setAllProjects(filteredRepos);
         setShowProjectSelector(true);
-        
+
         data.githubData = {
           avatarUrl: userData.avatar_url,
           bio: userData.bio,
           location: userData.location,
-          repos: filteredRepos.slice(0, 4)
+          repos: filteredRepos.slice(0, 4),
         };
       }
+
       setResumeData(data);
+      saveToCache(data);
+      const shareUrl = generateShareableLink(data);
+      if (shareUrl) setShareableUrl(shareUrl);
     } catch (error) {
-      console.error('Error fetching GitHub data:', error);
-      alert('Error fetching GitHub data. Please check the username and try again.');
+      console.error("Error fetching GitHub data:", error);
+      alert(
+        "Error fetching GitHub data. Please check the username and try again."
+      );
     }
     setLoading(false);
   };
@@ -58,14 +83,10 @@ function App() {
         ...resumeData,
         githubData: {
           ...resumeData.githubData,
-          repos: selectedProjects
-        }
+          repos: selectedProjects,
+        },
       });
     }
-  };
-
-  const handleDeploy = async () => {
-    setLoading(true);
   };
 
   return (
@@ -75,17 +96,12 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Github className="h-6 w-6 text-gray-700" />
-              <h1 className="text-xl font-bold text-gray-900">GithubResume Builder</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                GithubResume Builder
+              </h1>
             </div>
             {resumeData && !showProjectSelector && (
-              <button
-                onClick={handleDeploy}
-                className="flex items-center gap-2 bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
-                disabled={loading}
-              >
-                <Share2 className="h-4 w-4" />
-                Share Resume
-              </button>
+              <ShareButton url={shareableUrl} />
             )}
           </div>
         </div>
@@ -99,7 +115,9 @@ function App() {
         ) : showProjectSelector ? (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">Select and Order Your Projects</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Select and Order Your Projects
+              </h2>
               <button
                 onClick={() => setShowProjectSelector(false)}
                 className="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
@@ -127,7 +145,7 @@ function App() {
         )}
       </main>
 
-      <footer className='p-4 text-center'>Built from ❤️ by @Hi_Mrinal</footer>
+      <footer className="p-4 text-center">Built from ❤️ by @Hi_Mrinal</footer>
     </div>
   );
 }
