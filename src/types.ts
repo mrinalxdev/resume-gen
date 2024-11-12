@@ -5,7 +5,7 @@ export interface ResumeData {
     email: string;
     phone: string;
     location: string;
-    summary: string;
+    summary?: string;
   };
   experience: {
     title: string;
