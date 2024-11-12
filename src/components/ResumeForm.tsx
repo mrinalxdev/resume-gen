@@ -7,13 +7,14 @@ interface ResumeFormProps {
 }
 
 const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
+  const [fresher, setFresher] = useState(false);
   const [experiences, setExperiences] = useState([{
-    title: '',
-    company: '',
-    location: '',
-    startDate: '',
-    endDate: '',
-    highlights: ['']
+      title: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      highlights: ['']
   }]);
 
   const addExperience = () => {
@@ -60,20 +61,22 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    
+
     const data: ResumeData = {
       personalInfo: {
-        name: formData.get('name') as string,
-        title: formData.get('title') as string,
-        email: formData.get('email') as string,
-        phone: formData.get('phone') as string,
-        location: formData.get('location') as string,
-        summary: formData.get('summary') as string,
+        name: formData.get('name')!.toString(),
+        title: formData.get('title')!.toString(),
+        email: formData.get('email')!.toString(),
+        phone: formData.get('phone')!.toString(),
+        location: formData.get('location')!.toString(),
+        summary: formData.get('summary')?.toString(), // summary is optional
       },
-      experience: experiences.map(exp => ({
-        ...exp,
-        highlights: exp.highlights.filter(h => h.trim() !== '')
-      })),
+      experience: fresher
+        ? []
+        : experiences.map(exp => ({
+            ...exp,
+            highlights: exp.highlights.filter(h => h.trim() !== ''),
+          })),
       education: formData.get('education')?.toString().split('\n').filter(Boolean) || [],
       skills: formData.get('skills')?.toString().split(',').map(s => s.trim()).filter(Boolean) || [],
       githubUsername: formData.get('githubUsername') as string,
@@ -129,8 +132,7 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
         </div>
         <textarea
           name="summary"
-          placeholder="Professional Summary"
-          required
+          placeholder="Professional Summary (optional)"
           rows={4}
           className="input-field"
         />
@@ -147,103 +149,115 @@ const ResumeForm: React.FC<ResumeFormProps> = ({ onSubmit }) => {
             <Plus className="h-4 w-4" /> Add Position
           </button>
         </div>
-        
-        <div className="space-y-6">
-          {experiences.map((exp, index) => (
-            <div key={index} className="border rounded-lg p-4 space-y-4">
-              <div className="flex justify-between">
-                <h3 className="font-medium text-gray-700">Position {index + 1}</h3>
-                {experiences.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeExperience(index)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  value={exp.title}
-                  onChange={(e) => updateExperience(index, 'title', e.target.value)}
-                  placeholder="Job Title"
-                  required
-                  className="input-field"
-                />
-                <input
-                  type="text"
-                  value={exp.company}
-                  onChange={(e) => updateExperience(index, 'company', e.target.value)}
-                  placeholder="Company"
-                  required
-                  className="input-field"
-                />
-                <input
-                  type="text"
-                  value={exp.location}
-                  onChange={(e) => updateExperience(index, 'location', e.target.value)}
-                  placeholder="Location"
-                  required
-                  className="input-field"
-                />
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="text"
-                    value={exp.startDate}
-                    onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
-                    placeholder="Start Date"
-                    required
-                    className="input-field"
-                  />
-                  <input
-                    type="text"
-                    value={exp.endDate}
-                    onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
-                    placeholder="End Date"
-                    required
-                    className="input-field"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label className="text-sm font-medium text-gray-700">Key Achievements</label>
-                  <button
-                    type="button"
-                    onClick={() => addHighlight(index)}
-                    className="text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    Add Achievement
-                  </button>
+        <div className="flex justify-between items-center">
+          <label className="text-gray-900">I don't have any work experience</label>
+          <input
+            type="checkbox"
+            checked={fresher}
+            onChange={(e) => setFresher(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+          />
+        </div>
+
+        {!fresher && (
+          <div className="space-y-6">
+            {experiences.map((exp, index) => (
+              <div key={index} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between">
+                  <h3 className="font-medium text-gray-700">Position {index + 1}</h3>
+                  {experiences.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeExperience(index)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
-                {exp.highlights.map((highlight, hIndex) => (
-                  <div key={hIndex} className="flex gap-2">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    value={exp.title}
+                    onChange={(e) => updateExperience(index, 'title', e.target.value)}
+                    placeholder="Job Title"
+                    required
+                    className="input-field"
+                  />
+                  <input
+                    type="text"
+                    value={exp.company}
+                    onChange={(e) => updateExperience(index, 'company', e.target.value)}
+                    placeholder="Company"
+                    required
+                    className="input-field"
+                  />
+                  <input
+                    type="text"
+                    value={exp.location}
+                    onChange={(e) => updateExperience(index, 'location', e.target.value)}
+                    placeholder="Location"
+                    required
+                    className="input-field"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
                     <input
                       type="text"
-                      value={highlight}
-                      onChange={(e) => updateHighlight(index, hIndex, e.target.value)}
-                      placeholder="• Achievement or responsibility"
+                      value={exp.startDate}
+                      onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
+                      placeholder="Start Date"
+                      required
                       className="input-field"
                     />
-                    {exp.highlights.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeHighlight(index, hIndex)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
+                    <input
+                      type="text"
+                      value={exp.endDate}
+                      onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
+                      placeholder="End Date"
+                      required
+                      className="input-field"
+                    />
                   </div>
-                ))}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-medium text-gray-700">Key Achievements</label>
+                    <button
+                      type="button"
+                      onClick={() => addHighlight(index)}
+                      className="text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      Add Achievement
+                    </button>
+                  </div>
+                  {exp.highlights.map((highlight, hIndex) => (
+                    <div key={hIndex} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={highlight}
+                        onChange={(e) => updateHighlight(index, hIndex, e.target.value)}
+                        placeholder="• Achievement or responsibility"
+                        className="input-field"
+                      />
+                      {exp.highlights.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeHighlight(index, hIndex)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">

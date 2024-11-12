@@ -25,7 +25,7 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
               />
             )}
           </div>
-          
+
           <div className="flex flex-wrap gap-4 text-gray-600">
             <div className="flex items-center gap-1">
               <Mail className="h-4 w-4" />
@@ -57,8 +57,12 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
               </div>
             )}
           </div>
-          
-          <p className="text-gray-700 leading-relaxed">{data.personalInfo.summary}</p>
+
+          {data.personalInfo.summary && (
+            <p className="text-gray-700 leading-relaxed">
+              {data.personalInfo.summary}
+            </p>
+          )}
         </header>
 
         {/* GitHub Section */}
@@ -89,7 +93,7 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
                 </div>
               ))}
             </div>
-            
+
             <div className="mt-4">
               <img
                 src={`https://ghchart.rshah.org/${data.githubUsername}`}
@@ -101,27 +105,29 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
         )}
 
         {/* Experience */}
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-900">Experience</h2>
-          {data.experience.map((exp, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{exp.title}</h3>
-                  <p className="text-gray-700">{exp.company} • {exp.location}</p>
+        {data.experience.length > 0 && (
+          <section className="space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Experience</h2>
+            {data.experience.map((exp, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">{exp.title}</h3>
+                    <p className="text-gray-700">{exp.company} • {exp.location}</p>
+                  </div>
+                  <p className="text-gray-600 text-sm">
+                    {exp.startDate} - {exp.endDate}
+                  </p>
                 </div>
-                <p className="text-gray-600 text-sm">
-                  {exp.startDate} - {exp.endDate}
-                </p>
+                <ul className="list-disc list-inside space-y-1">
+                  {exp.highlights.map((highlight, hIndex) => (
+                    <li key={hIndex} className="text-gray-700 pl-2">{highlight}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="list-disc list-inside space-y-1">
-                {exp.highlights.map((highlight, hIndex) => (
-                  <li key={hIndex} className="text-gray-700 pl-2">{highlight}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
+            ))}
+          </section>
+        )}
 
         {/* Education */}
         <section className="space-y-4">
