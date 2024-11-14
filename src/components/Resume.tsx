@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { Github, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { ResumeData } from '../types';
 
@@ -6,9 +6,9 @@ interface ResumeProps {
   data: ResumeData;
 }
 
-const Resume: React.FC<ResumeProps> = ({ data }) => {
+export const Resume = forwardRef<HTMLDivElement, ResumeProps>(({ data }, ref) => {
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
+    <div ref={ref} className="bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
       <div className="p-8 space-y-8">
         {/* Header */}
         <header className="space-y-4">
@@ -156,6 +156,8 @@ const Resume: React.FC<ResumeProps> = ({ data }) => {
       </div>
     </div>
   );
-};
+});
+
+Resume.displayName = 'Resume';
 
 export default Resume;
