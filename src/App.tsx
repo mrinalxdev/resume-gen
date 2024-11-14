@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Github,
   Mail,
@@ -15,8 +15,11 @@ import { ResumeData } from "./types";
 import ShareButton from "./components/ShareButton";
 import { saveToCache, getFromCache } from "./utils/cache";
 import { generateShareableLink, getDataFromShare } from "./utils/share";
+import { exportToPdf } from "./utils/pdfExport";
+import { ExportButton } from "./components/ExportButton";
 
 function App() {
+  const resumeRef  = useRef<HTMLDivElement>(null)
   const [resumeData, setResumeData] = useState<ResumeData | null>(() => {
     // Checking for the shared data in the cache nor it would create a conflict between the previous one and the current one
     const sharedData = getDataFromShare();
@@ -77,6 +80,12 @@ function App() {
     setLoading(false);
   };
 
+  const handleExport = async() => {
+    if (!resumeData) return false;
+    const fileName = `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_resume.pdf`
+    return exportToPdf(resumeRef, fileName);
+  }
+
   const handleProjectsSelected = (selectedProjects: any[]) => {
     if (resumeData && resumeData.githubData) {
       setResumeData({
@@ -101,7 +110,10 @@ function App() {
               </h1>
             </div>
             {resumeData && !showProjectSelector && (
-              <ShareButton url={shareableUrl} />
+              <div className="flex items-center gap-2">
+                <ExportButton onExport={handleExport} />
+                {shareableUrl && <ShareButton url={shareableUrl} />}
+              </div>
             )}
           </div>
         </div>
@@ -138,7 +150,7 @@ function App() {
             >
               Create New Resume
             </button>
-            <Resume data={resumeData} />
+            <Resume ref={resumeRef} data={resumeData} />
           </div>
         ) : (
           <ResumeForm onSubmit={handleSubmit} />
