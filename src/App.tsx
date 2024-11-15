@@ -17,9 +17,10 @@ import { saveToCache, getFromCache } from "./utils/cache";
 import { generateShareableLink, getDataFromShare } from "./utils/share";
 import { exportToPdf } from "./utils/pdfExport";
 import { ExportButton } from "./components/ExportButton";
+import { ThemeToggle } from "./components/ThemeToggle";
 
 function App() {
-  const resumeRef  = useRef<HTMLDivElement>(null)
+  const resumeRef = useRef<HTMLDivElement>(null);
   const [resumeData, setResumeData] = useState<ResumeData | null>(() => {
     // Checking for the shared data in the cache nor it would create a conflict between the previous one and the current one
     const sharedData = getDataFromShare();
@@ -80,7 +81,7 @@ function App() {
     setLoading(false);
   };
 
-  const handleExport = async() => {
+  const handleExport = async () => {
     if (!resumeData) return false;
     const fileName = `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_resume.pdf`
     return exportToPdf(resumeRef, fileName);
@@ -99,22 +100,25 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <nav className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Github className="h-6 w-6 text-gray-700" />
-              <h1 className="text-xl font-bold text-gray-900">
+              <Github className="h-6 w-6 text-gray-700 dark:text-gray-200" />
+              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 GithubResume Builder
               </h1>
             </div>
-            {resumeData && !showProjectSelector && (
-              <div className="flex items-center gap-2">
-                <ExportButton onExport={handleExport} />
-                {shareableUrl && <ShareButton url={shareableUrl} />}
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              {resumeData && !showProjectSelector && (
+                <div className="flex items-center gap-2">
+                  <ExportButton onExport={handleExport} />
+                  {shareableUrl && <ShareButton url={shareableUrl} />}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -122,17 +126,17 @@ function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center min-h-[60vh]">
-            <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-gray-600 dark:text-gray-200" />
           </div>
         ) : showProjectSelector ? (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Select and Order Your Projects
               </h2>
               <button
                 onClick={() => setShowProjectSelector(false)}
-                className="bg-gray-900 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors"
+                className="bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
               >
                 Continue
               </button>
@@ -146,7 +150,7 @@ function App() {
           <div className="space-y-6">
             <button
               onClick={() => setResumeData(null)}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-md transition-colors"
+              className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-md transition-colors"
             >
               Create New Resume
             </button>
@@ -157,7 +161,7 @@ function App() {
         )}
       </main>
 
-      <footer className="p-4 text-center">Built from ❤️ by @Hi_Mrinal</footer>
+      <footer className="p-4 text-center text-gray-600 dark:text-gray-400">Built with ❤️ by @Hi_Mrinal</footer>
     </div>
   );
 }
